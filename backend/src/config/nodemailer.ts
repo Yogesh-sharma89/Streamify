@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import AppError from "../utils/appError";
+import AppError from "../utils/appError.ts";
 
 const resend_key = process.env.RESEND_API_KEY;
 
