@@ -1,53 +1,28 @@
-import nodemailer from 'nodemailer';
-import "dotenv/config";
-import { google } from "googleapis";
+import { Resend } from "resend";
+import AppError from "../utils/appError";
 
-const OAuth2 = google.auth.OAuth2;
+const resend_key = process.env.RESEND_API_KEY;
 
-const oauth2Client = new OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  "https://developers.google.com/oauthplayground"
-);
+const resend = new Resend(resend_key);
 
-oauth2Client.setCredentials({
-  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-});
 
-const accessToken = await oauth2Client.getAccessToken();
-
-const transporter =  nodemailer.createTransport({
-    service:"gmail",
-    auth:{
-        user:process.env.EMAIL_USER,
-        type:'OAuth2',
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-        accessToken: accessToken.token,
-    }
-} as any)
-
-transporter.verify((error,success)=>{
-    if(error){
-        console.log('Error in connecting to mail server : '+error);
-    }else{
-        console.log('Email server is ready to send emails')
-    }
-})
 
 const sendEmail = async(email:string,subject:string,html:string)=>{
 
     try{
 
-        const response = await transporter.sendMail({
-            from:process.env.EMAIL_USER,
+        const {data,error} = await resend.emails.send({
+            from:process.env.EMAIL_USER!,
             to:email,
             subject,
             html
         })
 
-        console.log(`Email sent with Id : ${response.messageId}`)
+        if(error){
+           throw new AppError(error.message , 400)
+        }
+
+        console.log("Email sent with Id : ",data.id)
 
     }catch(err){
         console.log('failed to send email ',err)

@@ -27,9 +27,9 @@
     "googleapis": "^171.4.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.6",
-    "nodemailer": "^8.0.1",
     "otp-generator": "^4.0.1",
     "redis": "^5.10.0",
+    "resend": "^6.9.2",
     "stream-chat": "^9.32.0"
   },
   "scripts": {
